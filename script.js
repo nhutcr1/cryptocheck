@@ -161,7 +161,7 @@ function check_res(response){
 }
 async function load_coin() {    
     var number_coin = 0;
-    let start_date = (new Date()).getTime()/1000-60;            
+    let start_date = (new Date()).getTime()/1000-90;            
     start_date = start_date.toString();
     for (let i=0; i<list_a.length; i++) {        
         let urla = url_proxy2+encodeURIComponent("https://api.binance.com/api/v3/klines?symbol="+list_a[i].code+"&interval=1m&startTime="+(start_date*1000));
@@ -176,10 +176,11 @@ async function load_coin() {
             .then(check_res)
             .then(function(data_b){
                 // console.log(list_b[i].code);
-                list_b[i].price = roundTo9(data_b.result[0].close);
+                list_b[i].price = roundTo9(data_b.result[data_b.result.length-1].close);
                 number_coin += 1;
+                document.getElementById("loading_text").innerHTML="Loading "+number_coin+" coins.";
             })
-            .then(function(){
+            .then(function(){                
                 if (number_coin == list_a.length) {
                     console.log("fin");                   
                     
