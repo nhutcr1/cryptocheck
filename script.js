@@ -87,8 +87,13 @@ function process_data_list_ftx(data_res) {
     console.log(data_res.result.length);
         
     for(let i=0; i< data_res.result.length; i++){
+        let name = "";
         if (data_res.result[i].name.indexOf("/USDT") >= 1){
-            let name = data_res.result[i].name.substring(0, data_res.result[i].name.lastIndexOf("/USDT"));
+            name = data_res.result[i].name.substring(0, data_res.result[i].name.lastIndexOf("/USDT"));
+        } else if (data_res.result[i].name.indexOf("/USD") >= 1){
+            name = data_res.result[i].name.substring(0, data_res.result[i].name.lastIndexOf("/USD"));
+        }
+        if (name != "") {
             if(name.indexOf("BTT")==0){
                 name = "BTTC";
             }            
@@ -120,7 +125,7 @@ function load_list_coin_ftx() {
         load_coin();
         setInterval(function(){
             load_coin();
-        }, 69000);
+        }, 90000);
     });
 }
 
