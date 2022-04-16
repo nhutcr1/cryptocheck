@@ -26,25 +26,34 @@
 
     <div id="main" class="container-fluid">
         <br>
-        <div>
-            <h1>
-                <span class="text-warning">crypto</span>
-                <span class="text-success">check</span>
-                <span class="text-danger">Price</span>
-            </h1>
+        <div class="row">
+            <div class="col-md-2 d-none d-md-block"></div>
+            <div class="col-12 col-md-8">
+                <h5>
+                    <span class="text-warning">crypto</span>
+                    <span>check price between 2 markets.</span>
+                </h5>
+            </div>            
+            <div class="col-md-2 d-none d-md-block"></div>
         </div>
-        <br>
+        <div class="row sticky-top bg-white">
+            <div class="col-md-2 d-none d-md-block"></div>
+            <div class="col-12 col-md-8">
+                <span id="load-str">Loading coins.</span>
+            </div>            
+            <div class="col-md-2 d-none d-md-block"></div>
+        </div>
         <table class="table fs-6">
             <thead class="text-center">
                 <tr>
                     <th scope="col"></th>
                     <th scope="col">
-                        <a href="https://www.binance.com/en/markets" target="_blank">Binance</a>
+                        <span>Binance</span>
                     </th>
                     <th scope="col">
-                        <a href="https://ftx.com/markets" target="_blank">FTX</a>
+                        <span>FTX</span>
                     </th>
-                    <th scope="col">B-A</th>
+                    <th scope="col">Diff</th>
                 </tr>
             </thead>
             <tbody id="table-body-coin">
@@ -65,6 +74,21 @@
                 </tr>
             </tbody>
         </table>
+        <div class="row">
+            <div class="col-md-2 d-none d-md-block"></div>
+            <div class="col-12 col-md-8">
+                <span id="load-str">*This website in developing!</span>
+            </div>            
+            <div class="col-md-2 d-none d-md-block"></div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-2 d-none d-md-block"></div>
+            <div class="col-12 col-md-8">
+                <span id="load-str">2022 Copyright For:)Fun.</span>
+            </div>            
+            <div class="col-md-2 d-none d-md-block"></div>
+        </div>
     </div>
 
     <script src="script.js"></script>

@@ -1,6 +1,8 @@
 var number_coin_binance = 2005;
 var time_interval = 15;
 var percent_price = 1;
+var countDownDate = 0;
+var interval_x = null;
 
 var api_binace_list = "https://api3.binance.com/api/v3/exchangeInfo";
 var api_ftx_list = "https://www.ftx.com/api/v5/market/tickers?instType=SPOT";
@@ -67,6 +69,7 @@ function process_data_list_market(data_res) {
 
 function load_list_coin_binance() {    
     document.getElementById("loading_text").innerHTML="Loading coins.";
+    document.getElementById("load-str").innerHTML="Loading coins.";
 
     fetch(url_proxy2 + encodeURIComponent(api_binace_list), {
         method: "GET",
@@ -122,10 +125,7 @@ function load_list_coin_ftx() {
     .then(process_data_list_ftx)
     .then(mix_coin)
     .then(function(){
-        load_coin();
-        setInterval(function(){
-            load_coin();
-        }, 90000);
+        load_coin();        
     });
 }
 
@@ -163,7 +163,7 @@ async function load_coin() {
     var number_coin = 0;
     let start_date = (new Date()).getTime()/1000-90;            
     start_date = start_date.toString();
-    for (let i=0; i<list_a.length; i++) {        
+    for (let i=0; i<list_a.length; i++) {       
         let urla = url_proxy2+encodeURIComponent("https://api.binance.com/api/v3/klines?symbol="+list_a[i].code+"&interval=1m&startTime="+(start_date*1000));
         await fetch(urla)
         .then(check_res)
@@ -177,10 +177,12 @@ async function load_coin() {
             .then(function(data_b){
                 // console.log(list_b[i].code);
                 list_b[i].price = roundTo9(data_b.result[data_b.result.length-1].close);
-                number_coin += 1;
-                document.getElementById("loading_text").innerHTML="Loading "+number_coin+" coins.";
+                number_coin += 1;                
             })
-            .then(function(){                
+            .then(function(){        
+                let text_loading = "Loading "+number_coin+"/"+list_a.length+" coins.";
+                document.getElementById("loading_text").innerHTML=text_loading;
+                document.getElementById("load-str").innerHTML=text_loading;         
                 if (number_coin == list_a.length) {
                     console.log("fin");                   
                     
@@ -190,7 +192,7 @@ async function load_coin() {
                         if(isNaN(diff)) diff=list_b[i].price - list_a[i].price;
                         list_a[i].diff = diff;
                         let diff_perc = roundTo2(diff / list_a[i].price * 100);
-                        if (diff_perc < 0 || diff_perc > 0) {                        
+                        if (diff_perc < 0 || diff_perc > 0) {
                             let class_diff = "text-success";
                             if (diff < 0) {
                                 class_diff = "text-danger";
@@ -214,6 +216,8 @@ async function load_coin() {
                     }
                     document.getElementById("table-body-coin").innerHTML = html;
                     myModal.hide();
+
+                    set_interval_load_coin();
                 }
             });
         }).catch(process_error);
@@ -221,6 +225,20 @@ async function load_coin() {
 }
 
 
+function set_interval_load_coin(){
+    countDownDate = 30;
+    // Update the count down every 1 second
+    interval_x = setInterval(function() {
+        // Output the result in an element with id="demo"
+        document.getElementById("load-str").innerHTML = countDownDate+"s";    
+        // If the count down is over, write some text 
+        if (countDownDate == 0) {
+            clearInterval(interval_x);
+            load_coin();
+        }
+        countDownDate -= 1;
+    }, 999);
+}
 // fetch("https://api.allorigins.win/raw?url=https://api3.binance.com/api/v3/exchangeInfo").then(response=>response.json())
 // fetch("https://api.allorigins.win/raw?url="+encodeURIComponent("https://api.binance.com/api/v3/klines?symbol=ETHUSDT&interval=1m&limit=1")).then(response=>response.json())
 function roundTo2(num) {
