@@ -33,6 +33,7 @@ function process_error(ex) {
     console.log(ex);
 }
 
+
 function process_data_list_market(data_res) {
     console.log("Process data!");
     console.log(data_res.symbols.length);
@@ -66,7 +67,6 @@ function process_data_list_market(data_res) {
     list_a = list_a_tmp;
     console.log(list_a);
 }
-
 function load_list_coin_binance() {    
     document.getElementById("loading_text").innerHTML="Loading coins.";
     document.getElementById("load-str").innerHTML="Loading coins.";
@@ -84,6 +84,7 @@ function load_list_coin_binance() {
     .then(load_list_coin_ftx)
     .catch(process_error);
 }
+
 
 function process_data_list_ftx(data_res) {
     console.log("Process data!");
@@ -118,13 +119,14 @@ function load_list_coin_ftx() {
         headers: {
             "Content-Type": "application/json",
             "X-Requested-With": "XMLHttpRequest",
-            "Origin": "cryptocheck.surge.sh",
+            "Origin": "cryptocheck.pages.dev",
         },
     })
     .then(process_response_list_market)
     .then(process_data_list_ftx)
     .then(mix_coin)
-    .then(function(){
+    .then(function(){        
+        add_table_coin();
         load_coin();        
     });
 }
@@ -179,44 +181,43 @@ async function load_coin() {
                 list_b[i].price = roundTo9(data_b.result[data_b.result.length-1].close);
                 number_coin += 1;                
             })
-            .then(function(){        
-                let text_loading = "Loading "+number_coin+"/"+list_a.length+" coins.";
-                document.getElementById("loading_text").innerHTML=text_loading;
-                document.getElementById("load-str").innerHTML=text_loading;         
-                if (number_coin == list_a.length) {
-                    console.log("fin");                   
-                    
-                    let html = "";
-                    for (let i = 0; i < list_a.length; i++) {
-                        let diff = roundTo9(list_b[i].price - list_a[i].price);
-                        if(isNaN(diff)) diff=list_b[i].price - list_a[i].price;
-                        list_a[i].diff = diff;
-                        let diff_perc = roundTo2(diff / list_a[i].price * 100);
-                        if (diff_perc < 0 || diff_perc > 0) {
-                            let class_diff = "text-success";
-                            if (diff < 0) {
-                                class_diff = "text-danger";
-                            }
-                            html +="<tr>\
-                                        <td>\
-                                            <span>" + list_a[i].code +' '+list_b[i].code+'</span>\
-                                        </td>\
-                                        <td class="text-end">\
-                                            <span>' + list_a[i].price +'</span>\
-                                        </td>\
-                                        <td class="text-end">\
-                                            <span>' +list_b[i].price +'</span>\
-                                        </td>\
-                                        <td class="text-end">\
-                                            <span>' +diff +'</span>\
-                                            <span class="' +class_diff +'">' +diff_perc +"%</span>\
-                                        </td>\
-                                    </tr>";
-                        }
-                    }
-                    document.getElementById("table-body-coin").innerHTML = html;
+            .then(function(){     
+                if(myModal._isShown) {
                     myModal.hide();
+                }                
 
+                let diff = roundTo9(list_b[i].price - list_a[i].price);
+                if(isNaN(diff)) diff=list_b[i].price - list_a[i].price;
+                list_a[i].diff = diff;
+                let diff_perc = roundTo2(diff / list_a[i].price * 100);
+                let class_diff = "";
+                if (diff_perc > 0) {
+                    class_diff = "fw-bold text-success";
+                } else if (diff < 0) {
+                    class_diff = "fw-bold text-danger";
+                } else {
+                    diff = "";
+                }
+                let id_coin = list_a[i].code +'-'+list_b[i].code;
+                let html ='<td>\
+                                <span>' +list_a[i].code +' '+list_b[i].code+'</span>\
+                            </td>\
+                            <td class="text-end">\
+                                <span>' + list_a[i].price +'</span>\
+                            </td>\
+                            <td class="text-end">\
+                                <span>' +list_b[i].price +'</span>\
+                            </td>\
+                            <td class="text-end">\
+                                <span>' +diff +'</span>\
+                                <span class="' +class_diff +'">' +diff_perc +'%</span>\
+                            </td>';
+                document.getElementById(id_coin).innerHTML=html;
+
+                let text_loading = "Loading "+number_coin+"/"+list_a.length+" coins.";                
+                document.getElementById("load-str").innerHTML=text_loading;
+                if (number_coin == list_a.length) {
+                    console.log("fin");
                     set_interval_load_coin();
                 }
             });
@@ -224,7 +225,27 @@ async function load_coin() {
     }
 }
 
-
+function add_table_coin(){
+    let html = "";
+    for(let i=0; i< list_a.length; i++) {
+        let id_coin = list_a[i].code +'-'+list_b[i].code;
+        html += '<tr id='+id_coin+'>\
+                    <td>\
+                        <span>' + list_a[i].code +' '+list_b[i].code+'</span>\
+                    </td>\
+                    <td class="text-end">\
+                        <span></span>\
+                    </td>\
+                    <td class="text-end">\
+                        <span></span>\
+                    </td>\
+                    <td class="text-end">\
+                        <span></span>\
+                    </td>\
+                </tr>';
+    }
+    document.getElementById("table-body-coin").innerHTML = html;
+}
 function set_interval_load_coin(){
     countDownDate = 30;
     // Update the count down every 1 second
@@ -239,8 +260,15 @@ function set_interval_load_coin(){
         countDownDate -= 1;
     }, 999);
 }
-// fetch("https://api.allorigins.win/raw?url=https://api3.binance.com/api/v3/exchangeInfo").then(response=>response.json())
-// fetch("https://api.allorigins.win/raw?url="+encodeURIComponent("https://api.binance.com/api/v3/klines?symbol=ETHUSDT&interval=1m&limit=1")).then(response=>response.json())
+// fetch("https://api3.binance.com/api/v3/exchangeInfo", {
+//     method: "GET",
+//     headers: {
+//         "Content-Type": "application/json",
+//         // "X-Requested-With": "XMLHttpRequest",
+//         // "Origin": "*",
+//         "Access":"*"
+//     },
+// })
 function roundTo2(num) {
     return +(Math.round(num + "e+2")  + "e-2");
 }
