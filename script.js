@@ -1,6 +1,7 @@
 var number_coin_binance = 2005;
 var time_interval = 15;
 var percent_price = 1;
+var countDownLoad = 0;
 var countDownDate = 0;
 var interval_x = null;
 
@@ -65,7 +66,7 @@ function process_data_list_market(data_res) {
         }
     });
     list_a = list_a_tmp;
-    console.log(list_a);
+    console.log(list_a.length);
 }
 function load_list_coin_binance() {    
     document.getElementById("loading_text").innerHTML="Loading coins.";
@@ -109,7 +110,7 @@ function process_data_list_ftx(data_res) {
         }
     }
     list_b.sort();
-    console.log(list_b);
+    console.log(list_b.length);
 }
 function load_list_coin_ftx() {    
     document.getElementById("loading_text").innerHTML="Loading coins.";
@@ -254,8 +255,14 @@ function set_interval_load_coin(){
         document.getElementById("load-str").innerHTML = countDownDate+"s";    
         // If the count down is over, write some text 
         if (countDownDate == 0) {
-            clearInterval(interval_x);
-            load_coin();
+            clearInterval(interval_x);            
+            countDownLoad+=1;
+            console.log(countDownLoad);
+            if (countDownLoad >= 60){
+                window.location = window.location.href;
+            }
+
+            load_coin();            
         }
         countDownDate -= 1;
     }, 999);
